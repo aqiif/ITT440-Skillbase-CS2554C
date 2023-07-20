@@ -1,0 +1,56 @@
+import socket
+import threading
+import random
+
+# List of quotes
+quotes = [
+    "Be yourself; everyone else is already taken. - Oscar Wilde",
+    "The only way to do great work is to love what you do. - Steve Jobs",
+    "In the end, it's not the years in your life that count. It's the life in your years. - Abraham Lincoln",
+    "Believe you can and you're halfway there. - Theodore Roosevelt",
+    "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
+    "Life is what happens when you're busy making other plans. - John Lennon",
+]
+
+def handle_client(client_socket):
+    # Generate a random index to get a quote
+    quote_index = random.randint(0, len(quotes) - 1)
+    quote = quotes[quote_index]
+
+    # Send the quote to the client
+    client_socket.send(quote.encode())
+
+    # Close the client socket
+    client_socket.close()
+
+def main():
+    # Server configuration
+    host = "192.168.121.135"
+    port = 8888
+
+    # Create a socket object
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Bind the socket to a specific address and port
+    server_socket.bind((host, port))
+
+    # Listen for incoming connections
+    server_socket.listen(5)
+    print(f"[*] Listening on {host}:{port}")
+
+    try:
+        while True:
+            # Accept a new client connection
+            client_socket, addr = server_socket.accept()
+            print(f"[*] Accepted connection from {addr[0]}:{addr[1]}")
+
+            # Create a new thread to handle the client
+            client_thread = threading.Thread(target=handle_client, args=(client_socket,))
+            client_thread.start()
+
+    except KeyboardInterrupt:
+        print("[!] Server shutting down.")
+        server_socket.close()
+
+if __name__ == "__main__":
+    main()
