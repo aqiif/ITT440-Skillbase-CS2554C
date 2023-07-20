@@ -1,0 +1,32 @@
+import socket
+
+SERVER_ADDRESS = "izani.synology.me"
+SERVER_PORT = 8443
+BUFFER_SIZE = 1024
+
+def main():
+    try:
+        # Create socket
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        # Connect to the server
+        client_socket.connect((SERVER_ADDRESS, SERVER_PORT))
+        print("Connected to the server.")
+
+        # Send UiTM Student ID to the server
+        student_id = "2022821436"
+        client_socket.send(student_id.encode())
+
+        # Receive and print the server response
+        response = client_socket.recv(BUFFER_SIZE).decode()
+        print("Server response:", response)
+
+    except socket.error as e:
+        print("Error occurred:", e)
+
+    finally:
+        # Close the socket
+        client_socket.close()
+
+if __name__ == "__main__":
+    main()
