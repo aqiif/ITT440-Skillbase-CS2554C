@@ -1,0 +1,33 @@
+import socket
+
+def bar_to_atmosphere(pressure_bar):
+    # Conversion from bar to atmosphere-standard (1 atm = 1.01325 bar)
+    return pressure_bar / 1.01325
+
+def start_server():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_address = ('192.168.121.135',6666)  # You can change the address and port as needed
+
+    server_socket.bind(server_address)
+    server_socket.listen(1)
+
+    print("Server is up and waiting for connections...")
+
+    while True:
+        client_socket, client_address = server_socket.accept()
+        print(f"Connection established with {client_address}")
+
+        try:
+            data = client_socket.recv(1024).decode().strip()
+            pressure_bar = float(data)
+            atmosphere_standard = bar_to_atmosphere(pressure_bar)
+            response = str(atmosphere_standard)
+
+            client_socket.sendall(response.encode())
+        except ValueError:
+            client_socket.sendall("Invalid input. Please enter a valid pressure in bar.".encode())
+
+        client_socket.close()
+
+if __name__ == "__main__":
+    start_server()
